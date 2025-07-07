@@ -1,0 +1,14 @@
+# Ignore virtual environments
+venv/
+venv1/
+
+# Ignore zip and large binaries
+*.zip
+*.pyd
+*.dll
+
+# Ignore caches and build files
+__pycache__/
+*.pyc
+*.log
+node_modules/
