@@ -8,7 +8,7 @@ export default function SquatPage() {
   const router = useRouter();
 
   const handleReady = () => {
-    router.push("/session/start"); // will build this next
+    router.push("/session/start"); 
   };
 
   return (

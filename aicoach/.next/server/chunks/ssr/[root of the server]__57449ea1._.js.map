@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 27, "column": 0}, "map": {"version":3,"sources":["file://C%3A/Users/mahan/ProjectsNew/Python/coach/aicoach/src/app/%28auth%29/sign-in/%5B%5B...sign-in%5D%5D/page.tsx"],"sourcesContent":["import { SignIn } from '@clerk/nextjs'\r\nimport React from 'react'\r\n\r\nconst SignInPage = () => {\r\n  return (\r\n    <main className='flex h-screen w-full items-center justify-center'>\r\n        <SignIn />\r\n    </main>\r\n  )\r\n}\r\n\r\nexport default SignInPage"],"names":[],"mappings":";;;;AAAA;;;AAGA,MAAM,aAAa;IACjB,qBACE,8OAAC;QAAK,WAAU;kBACZ,cAAA,8OAAC,sLAAA,CAAA,SAAM;;;;;;;;;;AAGf;uCAEe","debugId":null}}]
+}

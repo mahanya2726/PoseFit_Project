@@ -1,14 +1,45 @@
-# Ignore virtual environments
-venv/
-venv1/
-
-# Ignore zip and large binaries
+# === GENERAL ===
+.DS_Store
+*.log
 *.zip
+*.pem
 *.pyd
 *.dll
-
-# Ignore caches and build files
-__pycache__/
 *.pyc
-*.log
+*.tsbuildinfo
+next-env.d.ts
+__pycache__/
+*.py[cod]
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# === ENVIRONMENT FILES ===
+.env*
+venv/
+venv1/
+**/venv/
+**/venv1/
+
+# === NODE / YARN / NPM ===
 node_modules/
+.pnp.*
+/.pnp
+/.next/
+/out/
+/build
+/.clerk/
+/coverage
+/.vercel
+
+# Yarn Berry
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# === COMMENTS ===
+# Ignoring frontend build, dependencies, and Clerk secrets
+# Ignoring Python virtual environments in any folder

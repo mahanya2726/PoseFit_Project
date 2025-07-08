@@ -7,7 +7,7 @@ export default function StartExercisePage() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const [stream, setStream] = useState<MediaStream | null>(null);
-  const [countdown, setCountdown] = useState<number | null>(3);
+  const [countdown, setCountdown] = useState<number | null>(5);
   const [timer, setTimer] = useState<number | null>(null);
   const [recordedChunks, setRecordedChunks] = useState<Blob[]>([]);
   const [videoURL, setVideoURL] = useState<string | null>(null);
@@ -25,12 +25,13 @@ export default function StartExercisePage() {
     workout: "/workout.mp3",
   };
 
-  const params = useSearchParams();
-  const durationFromQuery = Number(params.get("duration")) || 10;
-  const SESSION_DURATION = durationFromQuery;
+  const storedDuration =
+    typeof window !== "undefined" ? Number(localStorage.getItem("duration")) || 10 : 10;
+  const SESSION_DURATION = storedDuration;
 
-  // Fetch selected exercise from localStorage
-  const exercise = typeof window !== "undefined" ? localStorage.getItem("exercise") || "squat" : "squat";
+
+  const exercise =
+    typeof window !== "undefined" ? localStorage.getItem("exercise") || "squat" : "squat";
 
   useEffect(() => {
     async function initCamera() {
@@ -53,7 +54,10 @@ export default function StartExercisePage() {
         setCountdown(null);
         startSession();
       } else {
-        const timeout = setTimeout(() => setCountdown((prev) => (prev !== null ? prev - 1 : null)), 1000);
+        const timeout = setTimeout(
+          () => setCountdown((prev) => (prev !== null ? prev - 1 : null)),
+          1000
+        );
         return () => clearTimeout(timeout);
       }
     }
@@ -124,7 +128,18 @@ export default function StartExercisePage() {
       const result = await response.json();
       console.log("Server response:", result);
 
-      window.location.href = `/session/result?total=${result.total_squats}&good=${result.good_squats}&bad=${result.bad_squats}`;
+      if (exercise === "squat") {
+        window.location.href = `/session/result?exercise=squat&total=${result.total_squats}&good=${result.good_squats}&bad=${result.bad_squats}`;
+      } else if (exercise === "pushup") {
+        window.location.href = `/session/result?exercise=pushup&total=${result.total_pushups}&good=${result.good_pushups}&bad=${result.bad_pushups}`;
+      } else if (exercise === "lunges") {
+        window.location.href = `/session/result?exercise=lunges&total=${result.total_lunges}&good=${result.good_lunges}&bad=${result.bad_lunges}`;
+      } else if (exercise === "plank") {
+        const warnings = encodeURIComponent(result.warnings?.join("; ") || "");
+        window.location.href = `/session/result?exercise=plank&duration=${result.plank_duration_sec}&badframes=${result.bad_posture_frames}&warnings=${warnings}`;
+      } else {
+        alert("Unsupported exercise type!");
+      }
     } catch (error) {
       console.error("Error uploading video:", error);
       alert("Failed to send video to backend.");
@@ -133,10 +148,14 @@ export default function StartExercisePage() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-2">
-      <h1 className="text-2xl font-bold mb-4">🏋️ Start Your {exercise.charAt(0).toUpperCase() + exercise.slice(1)} Session</h1>
+      <h1 className="text-2xl font-bold mb-4">
+        🏋️ Start Your {exercise.charAt(0).toUpperCase() + exercise.slice(1)} Session
+      </h1>
 
       {!sessionStarted && countdown !== null && (
-        <div className="text-4xl font-bold text-blue-600">Your time starts in {countdown}...</div>
+        <div className="text-4xl font-bold text-blue-600">
+          Your time starts in {countdown}...
+        </div>
       )}
 
       {sessionStarted && timer !== null && (
@@ -149,7 +168,6 @@ export default function StartExercisePage() {
         playsInline
         muted
         className="rounded shadow-md w-[90vw] h-[100vh] object-cover"
-
       />
     </div>
   );

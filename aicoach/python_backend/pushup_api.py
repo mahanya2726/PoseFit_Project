@@ -26,13 +26,17 @@ def upload_pushup_video():
     video_path = os.path.join(UPLOAD_FOLDER, video.filename)
     video.save(video_path)
 
-    # Mediapipe setup
     mp_pose = mp.solutions.pose
     pose = mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5)
 
     cap = cv2.VideoCapture(video_path)
     count = good = bad = 0
     dir = 0
+
+    posture_issues = {
+        "sagging_hip": 0,
+        "shallow_elbow": 0
+    }
 
     while cap.isOpened():
         ret, frame = cap.read()
@@ -61,9 +65,13 @@ def upload_pushup_video():
 
         if elbow_angle < 90 and dir == 0:
             dir = 1
-            hip_bad = torso_angle < 160
-            if hip_bad:
+
+            if torso_angle < 160 or elbow_angle < 75:
                 bad += 1
+                if torso_angle < 160:
+                    posture_issues["sagging_hip"] += 1
+                if elbow_angle < 75:
+                    posture_issues["shallow_elbow"] += 1
             else:
                 good += 1
 
@@ -74,11 +82,28 @@ def upload_pushup_video():
     cap.release()
     pose.close()
 
+    # Generate Warnings
+    warnings = []
+    if posture_issues["sagging_hip"] > 0:
+        warnings.append("⚠️ Hips sagging → Engage your core to maintain a straight line.")
+    if posture_issues["shallow_elbow"] > 0:
+        warnings.append("⚠️ Elbows not bent enough → Lower yourself further for full pushup range.")
+
+    if count == 0:
+        return jsonify({
+            'message': 'No valid pushups detected.',
+            'total_pushups': 0,
+            'good_pushups': 0,
+            'bad_pushups': 0,
+            'warnings': ["❌ No valid pushup movement detected. Please ensure you're visible and moving properly."]
+        })
+
     return jsonify({
         'message': 'Video processed successfully.',
         'total_pushups': count,
         'good_pushups': good,
-        'bad_pushups': bad
+        'bad_pushups': bad,
+        'warnings': warnings
     })
 
 if __name__ == '__main__':
