@@ -60,7 +60,7 @@ aicoach/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/ai-coach.git
+git clonehttps://github.com/mahanya2726/PoseFit_Project.git
 cd ai-coach
 ```
 
