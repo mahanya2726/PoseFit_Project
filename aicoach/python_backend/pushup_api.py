@@ -11,6 +11,7 @@ CORS(app)
 UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
+# ---- Function: Get Angle ----
 def get_angle(a, b, c):
     a, b, c = np.array(a), np.array(b), np.array(c)
     return np.degrees(np.arccos(
@@ -63,18 +64,21 @@ def upload_pushup_video():
         elbow_angle = get_angle(sh, el, wr)
         torso_angle = get_angle(sh, hip, knee)
 
+        # Down phase
         if elbow_angle < 90 and dir == 0:
             dir = 1
 
-            if torso_angle < 160 or elbow_angle < 75:
+            if torso_angle < 160:
+                posture_issues["sagging_hip"] += 1
+            if elbow_angle > 110:
+                posture_issues["shallow_elbow"] += 1
+
+            if torso_angle < 160 or elbow_angle > 110:
                 bad += 1
-                if torso_angle < 160:
-                    posture_issues["sagging_hip"] += 1
-                if elbow_angle < 75:
-                    posture_issues["shallow_elbow"] += 1
             else:
                 good += 1
 
+        # Up phase
         if elbow_angle > 160 and dir == 1:
             count += 1
             dir = 0
@@ -82,7 +86,7 @@ def upload_pushup_video():
     cap.release()
     pose.close()
 
-    # Generate Warnings
+    # Warnings based on posture issues
     warnings = []
     if posture_issues["sagging_hip"] > 0:
         warnings.append("⚠️ Hips sagging → Engage your core to maintain a straight line.")
